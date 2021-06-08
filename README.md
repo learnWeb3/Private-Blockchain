@@ -204,3 +204,8 @@ The following controllers have been added :
 - AdressesController: create and display current addresses
 - WalletsController: load, create and display current wallets
 - MessagesController: sign a message using a legacy Bitcoin address
+
+## API 
+
+API documentation can be found following the link bellow :
+<https://documenter.getpostman.com/view/13953520/TzY6AaAm>
