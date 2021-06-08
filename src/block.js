@@ -55,7 +55,7 @@ class Block {
       // Save in auxiliary variable the current block hash
       const shallowCopy = {...self, hash: null};
       // Recalculate the hash of the Block
-      shallowCopy.hash = SHA256(SHA256(shallowCopy));
+      shallowCopy.hash = SHA256(JSON.stringify(shallowCopy)).toString();
       // Comparing if the hashes changed
       self.hash == shallowCopy.hash ? resolve(true) : resolve(false);
     });

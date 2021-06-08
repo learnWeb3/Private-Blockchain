@@ -72,7 +72,7 @@ class Blockchain {
       // timestamp block
       block.time = new Date().getTime().toString().slice(0, -3);
       // compute hash block
-      block.hash = SHA256(SHA256(block)).toString(); // reviewed sorry !
+      block.hash = SHA256(JSON.stringify(block)).toString(); // reviewed sorry !
       // validate chain
       const errorLog = await self.validateChain();
       // if no error found in the chain
@@ -198,7 +198,7 @@ class Blockchain {
         const block = self.chain[index];
         const blockData = await block.getBData();
         const { star, address } = blockData;
-        userAddress === address && stars.push({ ...star, address: address });
+        userAddress === address && stars.push({ ...star, owner: address });
       }
       resolve(stars);
     });
@@ -216,7 +216,8 @@ class Blockchain {
     return new Promise(async (resolve, reject) => {
       for (let index = 0; index < self.chain.length; index++) {
         const block = self.chain[index];
-        await block.validate()
+        await block
+          .validate()
           .then((block) => {
             const previousBlock = self.chain.find(
               (prevBlock) => prevBlock.height === block.height - 1
