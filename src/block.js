@@ -38,17 +38,26 @@ class Block {
    *  5. Resolve true or false depending if it is valid or not.
    *  Note: to access the class values inside a Promise code you need to create an auxiliary value `let self = this;`
    */
+
+  // There are multiples issues here.
+
+  // Before recalculation the hash of the block, you need to assign NULL to the self block so that a correct hash can be obtained (Not with already presented hash value).
+
+  // After recalculation of the hash of the block, you need to reassign the original value of the self block back to itself so that no one is able to tamper with it.
+  // Suggestion
+  // Instead of assigning NULL & then the original value to the self block, you can use the spread operator which will do the same work without tampering with the self block. You can read about it more here
+  // Required 
+  // The SHA256 function is not used correctly here. The correct implementation should be as below.
+  
   validate() {
     let self = this;
     return new Promise((resolve, reject) => {
       // Save in auxiliary variable the current block hash
-      const currentHash = self.hash;
+      const shallowCopy = {...self, hash: null};
       // Recalculate the hash of the Block
-      const hashCheck = SHA256(SHA256(self)).toString();
+      shallowCopy.hash = SHA256(SHA256(shallowCopy));
       // Comparing if the hashes changed
-      currentHash === hashCheck
-        ? resolve(self)
-        : reject("Block validation error");
+      self.hash == shallowCopy.hash ? resolve(true) : resolve(false);
     });
   }
 

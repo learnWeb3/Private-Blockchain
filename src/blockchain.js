@@ -72,16 +72,15 @@ class Blockchain {
       // timestamp block
       block.time = new Date().getTime().toString().slice(0, -3);
       // compute hash block
-      block.hash = SHA256(SHA256(self)).toString();
-      // validate block
-      block
-        .validate()
-        .then((block) => {
-          self.chain.push(block);
-          this.height++;
-          resolve(block);
-        })
-        .catch((error) => console.error(error));
+      block.hash = SHA256(SHA256(block)).toString(); // reviewed sorry !
+      // validate chain
+      const errorLog = await self.validateChain();
+      // if no error found in the chain
+      if (errorLog.length === 0) {
+        self.chain.push(block);
+        this.height++;
+        resolve(block);
+      }
     });
   }
 
@@ -131,7 +130,8 @@ class Blockchain {
       const parsedMessage = message.split(":");
       const currentTime = new Date().getTime().toString().slice(0, -3);
       const timeElapsed = parseInt(currentTime) - parseInt(parsedMessage[1]);
-      if (timeElapsed < 350) {
+      if (timeElapsed < 300) {
+        // dumb ! sorry
         if (bitcoinMessage.verify(message, address, signature)) {
           const block = new BlockClass.Block({
             star,
@@ -145,7 +145,7 @@ class Blockchain {
           reject("Unable to verify signature");
         }
       } else {
-        reject("Time constraint limit exceeded +450 sec");
+        reject("Time constraint limit exceeded +300 sec");
       }
     });
   }
@@ -198,7 +198,7 @@ class Blockchain {
         const block = self.chain[index];
         const blockData = await block.getBData();
         const { star, address } = blockData;
-        userAddress === address && stars.push(star);
+        userAddress === address && stars.push({ ...star, address: address });
       }
       resolve(stars);
     });
@@ -216,21 +216,18 @@ class Blockchain {
     return new Promise(async (resolve, reject) => {
       for (let index = 0; index < self.chain.length; index++) {
         const block = self.chain[index];
-        block
-          .validate()
+        await block.validate()
           .then((block) => {
-            if (
-              block.previousBlockHash !==
-              self.chain.find(
-                (prevBlock) => prevBlock.height === block.height - 1
-              ).hash
-            ) {
-              reject("Chain validation error");
+            const previousBlock = self.chain.find(
+              (prevBlock) => prevBlock.height === block.height - 1
+            ).hash;
+            if (block.previousBlockHash !== previousBlock.hash) {
+              errorLog.push(block);
             }
           })
           .catch((error) => console.error(error));
       }
-      resolve(self);
+      resolve(errorLog);
     });
   }
 }

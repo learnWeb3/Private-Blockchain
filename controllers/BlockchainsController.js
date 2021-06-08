@@ -20,6 +20,26 @@ class BlockchainsController {
     this.submitStar();
     this.getBlockByHash();
     this.getStarsByOwner();
+    this.validateChain();
+  }
+  // Enpoint to validate the chain state // missed it
+  validateChain() {
+    this.app.get("/chain/validate", async (req, res) => {
+      const errorLog = await this.blockchain.validateChain();
+      let data;
+      if (errorLog.length === 0) {
+        data = JSON.stringify({
+          errorLog: [],
+          message: "No error found in the chain",
+        });
+      } else {
+        data = JSON.stringify({
+          errorLog,
+          message: "Errors have been found in the block specified in the errorLog field",
+        });
+      }
+      return res.status(200).send(data);
+    });
   }
 
   // Enpoint to Get a Block by Height (GET Endpoint)
