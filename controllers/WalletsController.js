@@ -13,8 +13,12 @@ class WalletsController {
   // method to list wallets within the bitcoin-qt running node
   index() {
     this.app.get("/wallets", async (req, res) => {
-      const wallets = await this.client.listwallets();
-      return res.status(200).send(wallets);
+      try {
+        const wallets = await this.client.listWallets();
+        return res.status(200).send(wallets);
+      } catch (error) {
+        return res.status(500).send("Something went wrong !");
+      }
     });
   }
 
@@ -24,10 +28,15 @@ class WalletsController {
    */
   load() {
     this.app.get("/wallets/:name", async (req, res) => {
-      const { name } = request.params;
+      const { name } = req.params;
       if (name) {
-        const wallet = await this.client.loadWallet(name);
-        return res.status(200).send(wallet);
+        try {
+          const wallet = await this.client.loadWallet(name);
+          return res.status(200).send(wallet);
+        } catch (error) {
+          console.log(error)
+          return res.status(500).send("Something went wrong !");
+        }
       } else {
         return res.status(422).send("Missing required parameter wallet name");
       }
@@ -40,10 +49,14 @@ class WalletsController {
    */
   create() {
     this.app.post("/wallets", async (req, res) => {
-      const { name } = request.params;
+      const { name } = req.body;
       if (name) {
-        const wallet = await this.client.createWallet(name);
-        return res.status(200).send(wallet);
+        try {
+          const wallet = await this.client.createWallet(name);
+          return res.status(200).send(wallet);
+        } catch (error) {
+          return res.status(500).send("Something went wrong !");
+        }
       } else {
         return res.status(422).send("Missing required parameter wallet name");
       }

@@ -13,8 +13,13 @@ class AdressesController {
   // method to list adresses within the bitcoin-qt running node
   index() {
     this.app.get("/addresses", async (req, res) => {
-      const addresses = await this.client.listAddressGroupings();
-      return res.status(200).send(addresses);
+      try {
+        const addresses = await this.client.listAddressGroupings();
+        return res.status(200).send(addresses);
+      } catch (error) {
+        console.log(error)
+        return res.status(500).send("Something went wrong !");
+      }
     });
   }
 
@@ -24,11 +29,16 @@ class AdressesController {
    * @param {*} type
    */
   create() {
-    this.app.post("/adresses", async (req, res) => {
-      const { name, type } = request.params;
+    this.app.post("/addresses", async (req, res) => {
+      const { name, type } = req.body;
       if (name && type) {
-        const address = await this.client.getNewAddress(name, type);
-        return res.status(200).send(address);
+        try {
+          const address = await this.client.getNewAddress(name, type);
+          return res.status(200).send(address);
+        } catch (error) {
+          console.log(error);
+          return res.status(500).send("Something went wrong !");
+        }
       } else {
         return res.status(422).send("Missing required parameters : name/type");
       }

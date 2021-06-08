@@ -12,18 +12,18 @@ class MessagesController {
 
   // method to sign a message using "legacy" address and a message
   sign() {
-    this.app.post("/wallets/message/sign", async (req, res) => {
+    this.app.post("/messages/sign", async (req, res) => {
       const { address, message } = req.body;
       if (address && message) {
-        const signature = await this.client.signMessage(address, message);
-        if (signature) {
+        try {
+          const signature = await this.client.signMessage(address, message);
           return res.status(200).send({
             address,
             message,
             signature,
           });
-        } else {
-          return res.status(500).send("An error happened!");
+        } catch (error) {
+          return res.status(500).send("Something went wrong !");
         }
       } else {
         return res.status(422).send("Adress, message are requested");

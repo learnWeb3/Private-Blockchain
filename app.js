@@ -54,9 +54,10 @@ class ApplicationServer {
       this.app,
       this.blockchain
     );
-    require("./controllers/AdressesController")(this.app, this.client);
+    require("./controllers/AdressesController.js")(this.app, this.client);
     require("./controllers/WalletsController.js")(this.app, this.client);
-    require("./controllers/MessagesController")(this.app, this.client);
+    require("./controllers/MessagesController.js")(this.app, this.client);
+    require("./controllers/ApplicationController.js")(this.app);
   }
 
   start() {
