@@ -208,4 +208,24 @@ The following controllers have been added :
 ## API 
 
 API documentation can be found following the link bellow :
+
 <https://documenter.getpostman.com/view/13953520/TzY6AaAm>
+
+## QUICKSTART
+
+This project assumes you have nodejs, npm, postman, and bitcoin-qt, installed and set up on your local machine.
+
+A bitcoin.conf file with the following content is required in order to make RPC call to bitcoind server: 
+
+```
+testnet=1 # activate testnet environnement
+rpcuser=root # make authenticated rpc call
+rpcpassword=foobar  # make authenticated rpc call
+```
+
+1. Clone the project repository
+2. Get into the project diretory
+3. Double check your bitcoin.conf file 
+4. Launch your bitcoind server
+5. Launch the server 'npm run dev or npm start'
+6. Launch POSTMAN and start to query the API
